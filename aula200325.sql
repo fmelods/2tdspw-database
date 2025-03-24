@@ -91,3 +91,33 @@ FROM
 WHERE
     a.cod_cliente = 74
     and a.cod_pedido = 130501;
+    
+
+
+
+create or replace procedure rel_pedidos (p_cod_ped number) as
+Begin FOR X IN (
+    SELECT
+        ped.cod_pedido,
+        cli.cod_cliente,
+        cli.nom_cliente,
+        MAX(ped.dat_pedido),
+        prod.nom_produto
+    FROM 
+        pedido ped
+        INNER JOIN cliente cli ON (ped.cod_cliente = cli.cod_cliente)
+        INNER JOIN item_pedido item ON (ped.cod_pedido = item.cod_pedido)
+        INNER JOIN produto prod ON (item.cod_produto = prod.cod_produto)
+    WHERE 
+        ped.cod_cliente = 74
+        AND ped.cod_pedido = 130501
+    GROUP BY
+        ped.cod_pedido,
+        cli.cod_cliente,
+        cli.nom_cliente,
+        prod.nom_produto
+) LOOP
+    DBMS_OUTPUT.PUT_LINE(X.COD_CLIENTE || ' ' || X.NOM_CLIENTE);
+END LOOP;
+END;
+
